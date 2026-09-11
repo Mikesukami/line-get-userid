@@ -434,89 +434,84 @@
 
     async function sendToDiscord(data) {
 
-        const payload = {
+    const payload = {
 
-            username: "LINE LIFF",
+        username: "LINE LIFF",
 
-            embeds: [
+        embeds: [
 
-                {
+            {
 
-                    title: "🔔 LINE User ID ถูกตรวจสอบ",
+                title: "🔔 LINE User ID ถูกตรวจสอบ",
 
-                    description:
-                        "มีการเปิด LIFF และยืนยันข้อมูล LINE แล้ว",
+                description:
+                    "มีการเปิด LIFF และยืนยันข้อมูล LINE แล้ว",
 
-                    fields: [
+                fields: [
 
-                        {
-                            name: "👤 ชื่อ",
-                            value:
-                                data.displayName ||
-                                "-",
-                            inline: false
-                        },
-
-                        {
-                            name: "🆔 LINE User ID",
-                            value:
-                                data.userId ||
-                                "-",
-                            inline: false
-                        },
-
-                        {
-                            name: "🔗 URL",
-                            value:
-                                data.url ||
-                                "-",
-                            inline: false
-                        }
-
-                    ],
-
-                    thumbnail: data.pictureUrl
-                        ? {
-                            url: data.pictureUrl
-                        }
-                        : undefined,
-
-                    timestamp:
-                        new Date().toISOString()
-
-                }
-
-            ]
-
-        };
-
-
-        const response =
-            await fetch(
-                DISCORD_WEBHOOK_URL,
-                {
-
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
+                    {
+                        name: "👤 ชื่อ",
+                        value:
+                            data.displayName || "-",
+                        inline: false
                     },
 
-                    body:
-                        JSON.stringify(payload)
+                    {
+                        name: "🆔 LINE User ID",
+                        value:
+                            data.userId || "-",
+                        inline: false
+                    },
 
-                }
-            );
+                    {
+                        name: "🖼️ URL รูปโปรไฟล์",
+                        value:
+                            data.pictureUrl || "-",
+                        inline: false
+                    }
+
+                ],
+
+                // ให้ Discord แสดงรูปโปรไฟล์ด้วย
+                thumbnail: data.pictureUrl
+                    ? {
+                        url: data.pictureUrl
+                    }
+                    : undefined,
+
+                timestamp:
+                    new Date().toISOString()
+            }
+
+        ]
+
+    };
 
 
-        if (!response.ok) {
+    const response =
+        await fetch(
+            DISCORD_WEBHOOK_URL,
+            {
+                method: "POST",
 
-            throw new Error(
-                "ไม่สามารถส่งข้อมูลไปยัง Discord ได้"
-            );
-        }
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify(payload)
+            }
+        );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "ไม่สามารถส่งข้อมูลไปยัง Discord ได้"
+        );
     }
+}
 
 
     // ==========================================
