@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Get LINE User ID</title>
+</head>
+
+<body>
+
+    <h2>LINE User ID</h2>
+
+    <p id="status">กำลังตรวจสอบ...</p>
+
+    <pre id="result"></pre>
+
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+    <script>
+
+        const LIFF_ID = "ใส่_LIFF_ID_ตรงนี้";
+
+        async function main() {
+
+            try {
+
+                await liff.init({
+                    liffId: LIFF_ID
+                });
+
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                    return;
+                }
+
+                const profile = await liff.getProfile();
+
+                document.getElementById("status").innerText =
+                    "อ่านข้อมูลสำเร็จ";
+
+                document.getElementById("result").innerText =
+                    "ชื่อ: " + profile.displayName +
+                    "\n\nUser ID:\n" + profile.userId;
+
+            } catch (error) {
+
+                document.getElementById("status").innerText =
+                    "เกิดข้อผิดพลาด";
+
+                document.getElementById("result").innerText =
+                    error;
+
+                console.error(error);
+            }
+        }
+
+        main();
+
+    </script>
+
+</body>
+</html>
