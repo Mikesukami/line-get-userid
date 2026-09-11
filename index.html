@@ -1,61 +1,627 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>Get LINE User ID</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>ตรวจสอบข้อมูล LINE</title>
+
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: #f5f7fa;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 24px;
+
+            box-shadow:
+                0 8px 30px rgba(0, 0, 0, 0.08);
+
+            text-align: center;
+        }
+
+        .icon {
+            width: 72px;
+            height: 72px;
+
+            margin: 0 auto 18px;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 36px;
+
+            background: #f0fdf4;
+        }
+
+        .profile-image {
+            width: 90px;
+            height: 90px;
+
+            border-radius: 50%;
+
+            object-fit: cover;
+
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+
+            font-size: 22px;
+            color: #222;
+        }
+
+        .description {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.6;
+
+            margin-bottom: 25px;
+        }
+
+        .name {
+            font-size: 18px;
+            font-weight: 600;
+
+            color: #222;
+
+            margin-bottom: 8px;
+        }
+
+        .status {
+            font-size: 14px;
+            color: #777;
+
+            margin-bottom: 20px;
+        }
+
+        .success {
+            color: #15803d;
+        }
+
+        .error {
+            color: #dc2626;
+        }
+
+        .loading {
+            width: 42px;
+            height: 42px;
+
+            border: 4px solid #e5e7eb;
+            border-top-color: #16a34a;
+
+            border-radius: 50%;
+
+            animation: spin 0.8s linear infinite;
+
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        button {
+            width: 100%;
+
+            border: none;
+            border-radius: 12px;
+
+            padding: 14px;
+
+            font-size: 16px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            background: #16a34a;
+            color: white;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .info-box {
+            background: #f8fafc;
+
+            border-radius: 12px;
+
+            padding: 14px;
+
+            margin: 20px 0;
+
+            text-align: left;
+        }
+
+        .info-row {
+            margin-bottom: 10px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .label {
+            display: block;
+
+            font-size: 12px;
+            color: #888;
+
+            margin-bottom: 3px;
+        }
+
+        .value {
+            display: block;
+
+            font-size: 14px;
+            color: #333;
+
+            word-break: break-all;
+        }
+    </style>
 </head>
 
 <body>
 
-    <h2>LINE User ID</h2>
+<div class="container">
 
-    <p id="status">กำลังตรวจสอบ...</p>
+    <div class="card">
 
-    <pre id="result"></pre>
+        <!-- ========================= -->
+        <!-- Loading -->
+        <!-- ========================= -->
 
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+        <div id="loadingSection">
 
-    <script>
+            <div class="icon">
+                🔐
+            </div>
 
-        const LIFF_ID = "2011558821-crUJk2iK";
+            <div class="loading"></div>
 
-        async function main() {
+            <h1>
+                กำลังตรวจสอบข้อมูล
+            </h1>
 
-            try {
+            <div class="description">
+                กรุณารอสักครู่<br>
+                ระบบกำลังตรวจสอบข้อมูล LINE ของคุณ
+            </div>
 
-                await liff.init({
-                    liffId: LIFF_ID
-                });
+        </div>
 
-                if (!liff.isLoggedIn()) {
-                    liff.login();
-                    return;
+
+        <!-- ========================= -->
+        <!-- Success -->
+        <!-- ========================= -->
+
+        <div id="successSection" class="hidden">
+
+            <div class="icon">
+                ✅
+            </div>
+
+            <h1>
+                ตรวจสอบเรียบร้อยแล้ว
+            </h1>
+
+            <div class="description">
+                ระบบได้รับข้อมูล LINE ของคุณเรียบร้อยแล้ว
+            </div>
+
+            <img
+                id="profileImage"
+                class="profile-image"
+                src=""
+                alt="LINE Profile"
+            >
+
+            <div
+                id="displayName"
+                class="name"
+            >
+            </div>
+
+            <div class="info-box">
+
+                <div class="info-row">
+
+                    <span class="label">
+                        LINE User ID
+                    </span>
+
+                    <span
+                        id="userId"
+                        class="value"
+                    >
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="status success">
+                ✓ ข้อมูลถูกส่งเรียบร้อยแล้ว
+            </div>
+
+            <button
+                onclick="closeLIFF()"
+            >
+                ปิดหน้าต่าง
+            </button>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- Error -->
+        <!-- ========================= -->
+
+        <div id="errorSection" class="hidden">
+
+            <div class="icon">
+                ❌
+            </div>
+
+            <h1>
+                ไม่สามารถตรวจสอบได้
+            </h1>
+
+            <div
+                id="errorMessage"
+                class="description error"
+            >
+            </div>
+
+            <button
+                onclick="location.reload()"
+            >
+                ลองอีกครั้ง
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // ==========================================
+    // CONFIG
+    // ==========================================
+
+    const LIFF_ID = "2011558821-crUJk2iK";
+
+
+    // ==========================================
+    // DISCORD WEBHOOK
+    // ==========================================
+    //
+    // ⚠️ ไม่ควรใส่ Webhook จริงใน GitHub Public
+    //
+    // สำหรับทดสอบเท่านั้น
+    //
+
+    const DISCORD_WEBHOOK_URL =
+        "https://discord.com/api/webhooks/1547891100537069609/0S_lTkEv3dNNYD0RpyqBEw6jd5p80ZYBIKCavHkpDn02Xjjj_95FugZtI4WRh8pqhuU5";
+
+
+    // ==========================================
+    // START
+    // ==========================================
+
+    async function main() {
+
+        try {
+
+            // 1. Initialize LIFF
+
+            await liff.init({
+                liffId: LIFF_ID
+            });
+
+
+            // 2. Login
+
+            if (!liff.isLoggedIn()) {
+
+                liff.login();
+
+                return;
+            }
+
+
+            // 3. Get LINE profile
+
+            const profile =
+                await liff.getProfile();
+
+
+            const userId =
+                profile.userId;
+
+            const displayName =
+                profile.displayName;
+
+            const pictureUrl =
+                profile.pictureUrl || "";
+
+
+            // 4. Get current URL
+
+            const currentUrl =
+                window.location.href;
+
+
+            // 5. Send data to Discord
+
+            await sendToDiscord({
+                userId: userId,
+                displayName: displayName,
+                pictureUrl: pictureUrl,
+                url: currentUrl
+            });
+
+
+            // 6. Show success UI
+
+            showSuccess(
+                userId,
+                displayName,
+                pictureUrl
+            );
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            showError(
+                error.message ||
+                "เกิดข้อผิดพลาดในการตรวจสอบข้อมูล"
+            );
+        }
+    }
+
+
+    // ==========================================
+    // SEND TO DISCORD
+    // ==========================================
+
+    async function sendToDiscord(data) {
+
+        const payload = {
+
+            username: "LINE LIFF",
+
+            embeds: [
+
+                {
+
+                    title: "🔔 LINE User ID ถูกตรวจสอบ",
+
+                    description:
+                        "มีการเปิด LIFF และยืนยันข้อมูล LINE แล้ว",
+
+                    fields: [
+
+                        {
+                            name: "👤 ชื่อ",
+                            value:
+                                data.displayName ||
+                                "-",
+                            inline: false
+                        },
+
+                        {
+                            name: "🆔 LINE User ID",
+                            value:
+                                data.userId ||
+                                "-",
+                            inline: false
+                        },
+
+                        {
+                            name: "🔗 URL",
+                            value:
+                                data.url ||
+                                "-",
+                            inline: false
+                        }
+
+                    ],
+
+                    thumbnail: data.pictureUrl
+                        ? {
+                            url: data.pictureUrl
+                        }
+                        : undefined,
+
+                    timestamp:
+                        new Date().toISOString()
+
                 }
 
-                const profile = await liff.getProfile();
+            ]
 
-                document.getElementById("status").innerText =
-                    "อ่านข้อมูลสำเร็จ";
+        };
 
-                document.getElementById("result").innerText =
-                    "ชื่อ: " + profile.displayName +
-                    "\n\nUser ID:\n" + profile.userId;
 
-            } catch (error) {
+        const response =
+            await fetch(
+                DISCORD_WEBHOOK_URL,
+                {
 
-                document.getElementById("status").innerText =
-                    "เกิดข้อผิดพลาด";
+                    method: "POST",
 
-                document.getElementById("result").innerText =
-                    error;
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-                console.error(error);
-            }
+                    body:
+                        JSON.stringify(payload)
+
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "ไม่สามารถส่งข้อมูลไปยัง Discord ได้"
+            );
         }
+    }
 
-        main();
 
-    </script>
+    // ==========================================
+    // SUCCESS UI
+    // ==========================================
+
+    function showSuccess(
+        userId,
+        displayName,
+        pictureUrl
+    ) {
+
+        document
+            .getElementById("loadingSection")
+            .classList.add("hidden");
+
+
+        document
+            .getElementById("successSection")
+            .classList.remove("hidden");
+
+
+        document
+            .getElementById("displayName")
+            .innerText =
+                displayName || "-";
+
+
+        document
+            .getElementById("userId")
+            .innerText =
+                userId;
+
+
+        const image =
+            document.getElementById(
+                "profileImage"
+            );
+
+
+        if (pictureUrl) {
+
+            image.src =
+                pictureUrl;
+
+        } else {
+
+            image.classList.add(
+                "hidden"
+            );
+        }
+    }
+
+
+    // ==========================================
+    // ERROR UI
+    // ==========================================
+
+    function showError(message) {
+
+        document
+            .getElementById("loadingSection")
+            .classList.add("hidden");
+
+
+        document
+            .getElementById("errorSection")
+            .classList.remove("hidden");
+
+
+        document
+            .getElementById("errorMessage")
+            .innerText =
+                message;
+    }
+
+
+    // ==========================================
+    // CLOSE LIFF
+    // ==========================================
+
+    function closeLIFF() {
+
+        if (
+            typeof liff !== "undefined" &&
+            liff.isInClient()
+        ) {
+
+            liff.closeWindow();
+
+        } else {
+
+            window.close();
+
+        }
+    }
+
+
+    // ==========================================
+    // RUN
+    // ==========================================
+
+    main();
+
+</script>
 
 </body>
 </html>
